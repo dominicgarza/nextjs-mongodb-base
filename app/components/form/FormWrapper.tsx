@@ -17,24 +17,33 @@ export const FormWrapper = ({
   resetButtonText,
   title,
   description,
+  isLoading,
   children,
 }: FormWrapperProps) => {
+  const loadingClass = isLoading ? 'form-loading' : '';
+
+  const classNames = [
+    'form-wrapper-container',
+    loadingClass
+  ].join(' ');
+
   return (
     <FormContainer onSuccess={onSuccess} defaultValues={defaultValues}>
-      <FormWrapperStyled className="form-wrapper-container">
-        <FormTitle title={title} />
+      <FormWrapperStyled className={classNames}>
+      <FormTitle title={title} />
 
-        <FormDescription description={description} />
+      <FormDescription description={description} />
 
-        {children}
+      {children}
 
-        <FormButtonRow
-          submitButtonText={submitButtonText}
-          resetButtonText={resetButtonText}
-          onCancel={onCancel}
-        />
-      </FormWrapperStyled>
-    </FormContainer>
+      <FormButtonRow
+        submitButtonText={submitButtonText}
+        resetButtonText={resetButtonText}
+        onCancel={onCancel}
+        isLoading={isLoading}
+      />
+    </FormWrapperStyled>
+    </FormContainer >
   );
 };
 
@@ -47,6 +56,9 @@ const FormWrapperStyled = styled(Box)(({ theme }: any) => {
       position: "absolute",
       bottom: theme.spacing(-2.5),
     },
+    "&.form-loading": {
+      cursor: 'wait',
+    }
   };
 });
 
@@ -87,6 +99,29 @@ const FormDescription = ({ description }: any) => {
   );
 };
 
+export const FormErrorText = ({
+  isError,
+  message = ''
+}: any) => {
+
+  if (!isError) {
+    return null;
+  }
+
+  return (
+    <Typography
+      sx={{
+        fontWeight: 400,
+        color: 'red'
+      }}
+      variant={"subtitle2"}
+      className="form-error-text"
+    >
+      {message}
+    </Typography>
+  );
+}
+
 /**
  *
  */
@@ -122,6 +157,10 @@ export interface FormWrapperProps {
    * Resets form with default values on click
    */
   resetButtonText?: string;
+  /**
+   * Form is loading or submitted
+   */
+  isLoading?: boolean;
   /**
    * All child components and form elements
    */

@@ -1,7 +1,14 @@
 "use client";
 
+import React from 'react';
 import { TextFieldElement, PasswordElement } from "react-hook-form-mui";
-import { FormWrapper, FormWrapperProps } from "../components/form/FormWrapper";
+import {
+  FormWrapper,
+  FormErrorText,
+  FormWrapperProps
+} from "../components/form/FormWrapper";
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios';
 
 export const Login = ({
   onLoginSubmit = () => {},
@@ -17,6 +24,47 @@ export const Login = ({
   closeModal = () => {},
   ...props
 }: LoginProps) => {
+
+  const [creds, setCreds] = React.useState({});
+
+  const handleLogin = async () => {
+    const {
+      data: loginResponse
+    } = await axios.post(
+      '/api/login',
+      creds
+    );
+    return loginResponse;
+  };
+
+  const {
+    error,
+    data,
+    isFetching,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ['login'],
+    queryFn: handleLogin,
+    enabled: false,
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
+
+  const isRequestLoading = [
+    isFetching,
+    isLoading
+  ].some((s: any) => (s))
+
+  React.useEffect(() => {
+    if (Object.keys(creds).length === 0) {
+      return;
+    }
+
+    refetch();
+  }, [creds]);
+
   const defaultValues = {
     email: defaultEmail,
     password: defaultPassword,
@@ -24,6 +72,10 @@ export const Login = ({
 
   const onSuccess = (values: any) => {
     onLoginSubmit(values);
+    setCreds((prevCreds: any) => ({
+      ...prevCreds,
+      ...values
+    }));
     closeModal();
   };
 
@@ -45,8 +97,15 @@ export const Login = ({
       title={title}
       description={description}
       submitButtonText={submitButtonText}
+      isLoading={isRequestLoading}
       {...props}
     >
+
+      <FormErrorText
+        message={'Invalid email or password.  Please try again.'}
+        isError={isError}
+      />
+
       <TextFieldElement
         label="Email"
         name="email"
@@ -54,6 +113,7 @@ export const Login = ({
         validation={{
           required: "Email is required",
         }}
+        disabled={isRequestLoading}
       />
 
       <PasswordElement
@@ -61,29 +121,30 @@ export const Login = ({
         name="password"
         type={"password"}
         helperText={`Min length: ${minPasswordLength} | Min special characters: ${minSpecialCharLength} | Min numbers: ${minNumberLength}`}
-        validation={{
-          required: "Password is required",
-          minLength: {
-            value: minPasswordLength,
-            message: `Minimum password length: ${minPasswordLength}`,
-          },
-          validate: {
-            minSpecialChar: (p: string) =>
-              matchPasswordValidate({
-                p,
-                minNumber: minSpecialCharLength,
-                regex: specialCharacterRegex,
-                message: `Min special characters: ${minSpecialCharLength}`,
-              }),
-            minNumber: (p: string) =>
-              matchPasswordValidate({
-                p,
-                minNumber: minNumberLength,
-                regex: numberRegex,
-                message: `Min numbers: ${minNumberLength}`,
-              }),
-          },
-        }}
+        disabled={isRequestLoading}
+      // validation={{
+      //   required: "Password is required",
+      //   minLength: {
+      //     value: minPasswordLength,
+      //     message: `Minimum password length: ${minPasswordLength}`,
+      //   },
+      //   validate: {
+      //     minSpecialChar: (p: string) =>
+      //       matchPasswordValidate({
+      //         p,
+      //         minNumber: minSpecialCharLength,
+      //         regex: specialCharacterRegex,
+      //         message: `Min special characters: ${minSpecialCharLength}`,
+      //       }),
+      //     minNumber: (p: string) =>
+      //       matchPasswordValidate({
+      //         p,
+      //         minNumber: minNumberLength,
+      //         regex: numberRegex,
+      //         message: `Min numbers: ${minNumberLength}`,
+      //       }),
+      //   },
+      // }}
       />
     </FormWrapper>
   );

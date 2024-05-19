@@ -9,7 +9,8 @@ import {
 export const FormButtonRow = ({
   submitButtonText = 'Submit',
   resetButtonText = 'Cancel',
-  onCancel
+  onCancel,
+  isLoading
 }: FormButtonRowProps) => {
 
   const isShowButtons = [
@@ -25,11 +26,13 @@ export const FormButtonRow = ({
     <ButtonRowStyled className="rb-form-button-row">
 
       <ResetButton
+        isLoading={isLoading}
         resetButtonText={resetButtonText}
         onCancel={onCancel}
       />
 
       <SubmitButton
+        isLoading={isLoading}
         submitButtonText={submitButtonText}
       />
     </ButtonRowStyled>
@@ -37,15 +40,18 @@ export const FormButtonRow = ({
 }
 
 const SubmitButton = ({
+  isLoading,
   submitButtonText
 }: any) => {
 
-  if(!submitButtonText) {
+  if (!submitButtonText) {
     return null;
   }
 
   return (
-    <ButtonRB type="submit">
+    <ButtonRB
+      disabled={isLoading}
+      type="submit">
       {submitButtonText}
     </ButtonRB>
   );
@@ -53,6 +59,7 @@ const SubmitButton = ({
 
 const ResetButton = ({
   resetButtonText,
+  isLoading,
   onCancel
 }: any) => {
 
@@ -62,6 +69,7 @@ const ResetButton = ({
 
   return (
     <ButtonRB
+      disabled={isLoading}
       onClick={onCancel}
       color={'inherit'}>
       {resetButtonText}
@@ -89,6 +97,10 @@ export interface FormButtonRowProps {
    * Resets form with default values on click
    */
   resetButtonText?: string
+  /**
+   * Form is loading or submitted
+   */
+  isLoading?: boolean;
   /**
    * Cancel button click override
    */

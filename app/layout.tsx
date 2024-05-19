@@ -8,8 +8,7 @@ import { NavigationMenu } from "./components/navigation/NavigationMenu";
 import { navigationActions } from "./components/navigation/navigationActions";
 import * as Realm from "realm-web";
 
-const appId = process.env.ATLAS_APP_ID;
-
+const appId = process.env.ATLAS_APP_ID || '';
 const realmApp = new Realm.App({ id: appId });
 
 console.log('app', realmApp);
