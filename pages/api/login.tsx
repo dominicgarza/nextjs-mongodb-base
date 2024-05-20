@@ -15,8 +15,13 @@ export default async function handler(
   } = req.body;
 
   try {
-    await login(email, password);
-    res.status(200);
+    const curr = await login(email, password);
+
+    console.log('curr', curr.accessToken);
+
+    res.status(200).json({
+      message: 'success'
+    });
   } catch (ex: any) {
     const statusCode =  ex.statusCode || 400;
     res.status(statusCode).json({
