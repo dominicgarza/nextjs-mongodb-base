@@ -7,12 +7,18 @@ import { ThemeProvider } from "@mui/material/styles";
 import { NavigationMenu } from "./components/navigation/NavigationMenu";
 import { navigationActions } from "./components/navigation/navigationActions";
 import * as Realm from "realm-web";
+import { headers, cookies } from 'next/headers';
+import { loginWithToken } from '@/app/singleton/user';
 
 const appId = process.env.ATLAS_APP_ID || '';
 const realmApp = new Realm.App({ id: appId });
 
-console.log('app', realmApp);
-console.log('appID', appId);
+//console.log('app', realmApp);
+//console.log('appID', appId);
+
+const authToken = cookies().getAll();
+
+console.log('Is I Auth', authToken);
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,17 +33,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
 
+  const headersList = headers();
+  const hello1 = headersList.get('x-hello-from-middleware1');
+
+  console.log('hello1', hello1);
+
   return (
     <html lang="en">
       <body className={inter.className}>
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
-              <NavigationMenu
-                isAuthorized={true}
-                navigationActions={navigationActions}
-              >
-                {children}
-              </NavigationMenu>
+            <NavigationMenu
+              isAuthorized={true}
+              navigationActions={navigationActions}
+            >
+              {children}
+            </NavigationMenu>
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>

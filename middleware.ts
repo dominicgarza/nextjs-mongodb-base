@@ -1,18 +1,20 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const loginMap: any = {};
-
 export function middleware(request: NextRequest) {
-  const ip: any = request.headers.get("x-forwarded-for");
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-hello-from-middleware1', 'hello')
 
-  if (!loginMap[ip]) {
-    loginMap[ip] = true;
-    //return NextResponse.rewrite(new URL("/login", request.url));
-  }
+  // You can also set request headers in NextResponse.rewrite
+  const response = NextResponse.next({
+    request: {
+      // New request headers
+      headers: requestHeaders,
+    },
+  })
 
-  if (request.nextUrl.pathname.startsWith("/logout")) {
-    loginMap[ip] = false;
-    //return NextResponse.rewrite(new URL("/login", request.url));
-  }
+  // Set a new response header `x-hello-from-middleware2`
+  response.headers.set('x-hello-from-middleware2', 'hello')
+  return response
+
 }

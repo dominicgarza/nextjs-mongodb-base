@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import cookie from 'cookie';
 import { login } from '../../app/singleton/user'
 
 export default async function handler(
@@ -17,7 +18,26 @@ export default async function handler(
   try {
     const curr = await login(email, password);
 
-    console.log('curr', curr.accessToken);
+    const expireDate = new Date();
+    expireDate.setDate(expireDate.getDate() + 50);
+
+    console.log('sdfdsasf');
+
+    try {
+      res.setHeader(
+        'Set-Cookie',
+        cookie.serialize(
+          'auth-token1', curr.accessToken,
+          {
+            expires: expireDate
+          }
+        )
+      );
+
+    } catch(ex) {
+      console.error('noooooo', ex);
+    }
+
 
     res.status(200).json({
       message: 'success'

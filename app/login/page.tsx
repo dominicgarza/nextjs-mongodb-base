@@ -57,6 +57,7 @@ export const Login = ({
     isLoading
   ].some((s: any) => (s))
 
+  // Login request on credentials update
   React.useEffect(() => {
     if (Object.keys(creds).length === 0) {
       return;

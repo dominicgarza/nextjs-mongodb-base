@@ -14,7 +14,28 @@ const login = async (email: any, password: any) => {
   return await realmApp.logIn(credentials);
 }
 
+const loginWithToken = async (token: any) => {
+
+  /* interface UserParameters {
+*   app: App;
+*   id: string;
+*   providerType: ProviderType;
+*   accessToken: string;
+*   refreshToken: string;
+* } */
+
+  //realmApp.logIn(credentials);
+
+  const deez: any = {
+    id: appId,
+    accessToken: token
+  }
+
+  return new Realm.User(deez);
+};
+
 export {
   realmApp,
-  login
+  login,
+  loginWithToken
 }
